@@ -112,9 +112,62 @@ incompatibilities.
 
 What happens if you run `ansible-inventory --list` in the directory you created above?
 
+**Output**
+```bash
+{
+    "_meta": {
+        "hostvars": {
+            "192.168.121.202": {
+                "ansible_ssh_private_key_file": "/home/jesper/devops24/lab_environment/deploy_key",
+                "ansible_user": "deploy"
+            },
+            "192.168.121.219": {
+                "ansible_ssh_private_key_file": "/home/jesper/devops24/lab_environment/deploy_key",
+                "ansible_user": "deploy"
+            }
+        }
+    },
+    "all": {
+        "children": [
+            "ungrouped",
+            "db",
+            "web"
+        ]
+    },
+    "db": {
+        "hosts": [
+            "192.168.121.202"
+        ]
+    },
+    "web": {
+        "hosts": [
+            "192.168.121.219"
+        ]
+    }
+}
+ 
+```
+**Answer** 
+When running ansible-inventory --list, we receive JSON-formatted data that describes the inventory managed by Ansible.
+It lists all the hosts with their IP addresses, the private key used for SSH connections, the Ansible user associated with each host, and any defined groups or server types.
+
 ## QUESTION B
 
 What happens if you run `ansible-inventory --graph` in the directory you created above?
+
+**Output**
+```bash
+@all:
+  |--@ungrouped:
+  |--@db:
+  |  |--192.168.121.202
+  |--@web:
+  |  |--192.168.121.219
+
+```
+**Answer** 
+With the `ansible-inventory --graph` command, we get a graphical overview that shows how the different hosts are grouped within the Ansible inventory.
+The db and web groups were likely automatically created when the hosts were defined.
 
 ## QUESTION C
 
@@ -131,6 +184,36 @@ Now run:
 Study the output of this command.
 
 What does the `ansible_connection=local` part mean?
+
+**Output**
+
+```bash
+jesdeb | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+192.168.121.202 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+192.168.121.219 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+
+```
+**Answer**
+We are basically telling Ansible to not use SSH and instead run everything locally on this machine. As a result Ansible treats our localhost (the controller) as if it were a managed host. 
+
 
 ## BONUS QUESTION
 
@@ -153,3 +236,11 @@ In your Ansible working directory where the `ansible.cfg' is, run
 You should get a pager displaying all available configuration values. How does it differ
 from when you run the same command in your usual home directory?
 
+**Answer**
+When you run the command ansible-config dump, it displays a list of configuration values. These values are highlighted in different colors — typically green and orange.
+
+The orange entries indicate settings that either deviate from Ansible’s default values or are missing configurations.
+
+In my home directory, the only value highlighted in orange is the CONFIG_FILE, because i haven’t initialized an Ansible configuration file there.
+
+However, in my project directory, we can see additional orange values for the settings i have changed. These represent configuration options that differ from the default values, as defined in my project’s local ansible.cfg file.
