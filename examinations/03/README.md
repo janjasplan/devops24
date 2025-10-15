@@ -121,9 +121,19 @@ Run the exact same playbook again and study the output. What is the difference?
 
 What does the `ansible.builtin.debug` module actually do?
 
+**Answer**
+
+The `ansible.builtin.debug` module helps me as a developer to verify the output from previous tasks.
+I configure my YAML file, which contains my Ansible playbook and when I run it the debug module displays information about what worked and what went wrong.
+
 ## QUESTION B
 
 What is the variable 'ansible_facts' and where does it come from?
+
+**Answer**
+The variable "ansible_facts" is a built in variable that contains all the information Ansible automatically gathers about at host before running tasks. It is full of details regarding OS, Hardware, Network interface, IP addresses, kernel version, architecture, etc. 
+
+It origins from a special module called "setup" which runs automatically at the start of every playbook unless you disable it.  
 
 ## QUESTION C
 
@@ -134,6 +144,22 @@ How do we now remove the software we installed through the playbook above? Make 
 playbook remove the exact same software we previously installed. Call the created
 playbook `03-uninstall-software.yml`.
 
+**Yaml file**
+```bash
+---
+ - name: Uninstall previously installed software
+   hosts: all
+   tasks:
+     - name: Remove vim, bash-completion, and qemu-guest-agent
+       become: true
+       ansible.builtin.package:
+         name: vim,bash-completion,qemu-guest-agent
+         state: absent
+```
+
+**Answer**
+To uninstall the previously installed features, I run the YAML file shown above. The difference from the first file is that I specify that the tasks will be removed instead of installed. I also make sure that the state variable is changed from present to absent. When I run the playbook again, Ansible will check if the features are already uninstalled. Since their state is absent, it will not perform the tasks again.
+
 ## BONUS QUESTION
 
 What happens when you run `ansible-playbook` with different options?
@@ -142,6 +168,20 @@ Explain what each of these options do:
 * --verbose, -vv, -vvv, -vvvv
 * --check
 * --syntax-check
+
+**Answer**
+
+The `--verboose` flags control how much detail Ansible shows in the output. With every added v we see the details from previous flag but with more data. 
+
+`-v`: Basic extra info, shows which config file is being used but also details regarding the variables that are being modified. 
+`-vv`: More detailed, shows paths, location, versions to different modules and files. 
+`-vvv`: Very detailed, shows connection details (SSH-commands, return data) aswell it includes raw JSON data regarding the modules that have been involved. 
+`-vvvv`: Maximum debugging, deeper SSH-debug, shows exactly how it connects, which keys are being used, port, etc. 
+
+The `--check` flag will try to predict some of the changes that may occur. So we can use this to see the result without making any changes. 
+
+The `--syntax-check` flag will validate if the yaml structure. In my case the output is `playbook: 03-uninstall-software.yml` which indicates that the syntax is correct.
+
 
 ## Study Material & Documentation
 
