@@ -76,6 +76,16 @@ What does the output look like the first time you run this playbook?
 
 What does the output look like the second time you run this playbook?
 
+**Answer**
+
+First run
+colour = brown
+During the first run the file is being copied to the server and the "changed" parameter is set to "1".
+
+Second run
+colour = green
+When i run it again no the "changed" parameter is set to "0" since this has already been done in the previous run. 
+
 # QUESTION B
 
 Even if we have copied the configuration to the right place, we still do not have a working https service
@@ -114,12 +124,51 @@ Again, these addresses are just examples, make sure you use the IP of the actual
 Note also that `curl` needs the `--insecure` option to establish a connection to a HTTPS server with
 a self signed certificate.
 
+
+**YAML file**
+```yaml
+---
+- name: Copies local files from host to webserver
+  hosts: web
+  become: true
+  tasks:
+    - name: Define source and destination paths
+      ansible.builtin.copy:
+        src: files/https.conf
+        dest: /etc/nginx/conf.d
+        mode: '0644'
+        owner: root
+        group: root
+
+
+    - name: Ensure Nginx is restarted and re-reads its configurations
+      ansible.builtin.service:
+        name: nginx
+        state: restarted
+```
+
+**Answer**
+
+To restart the Nginx service without going into the webserver we add a task in the playbook script.
+
+
 # QUESTION C
 
 What is the disadvantage of having a task that _always_ makes sure a service is restarted, even if there is
 no configuration change?
 
+**Answer**
+
+The disadvantage of always restarting a service is that it causes unnecessary downtime and breaks Ansible’s idempotency principle. The service may be interrupted even when no changes have been made. It is better to use handlers that restart a service only when a change happens.
+
+
 # BONUS QUESTION
 
 There are at least two _other_ modules, in addition to the `ansible.builtin.service` module that can restart
 a `systemd` service with Ansible. Which modules are they?
+
+**Answer**
+
+`ansible.builtin.systemd` provides options that service doesnt like `enabled`, `masked` which masks a unit and `daemon_reload`.
+
+`ansible.builtin.command` can directly call systemctl to restard a device. But this module is not idempotent and it also lacks built in error handling for systemd failures. 

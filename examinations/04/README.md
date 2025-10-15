@@ -80,7 +80,7 @@ log in to the machine and make sure that there are no `nginx` processes running.
 Why did we change the order of the tasks in the `04-uninstall-webserver.yml` playbook?
 
 **YAML file**
-```bash
+```yaml
 ---
 - name: Uninstall a webserver
   hosts: web
