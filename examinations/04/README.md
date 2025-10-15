@@ -53,12 +53,19 @@ module.
 
 How can we make the web server start with an addition of just one line to the playbook above?
 
+**Answer**
+To make the web server start immediately, I added the line `state: started` under the task "Ensure that nginx is started at boot". Without this line, the service would only be enabled to start on the next system boot, meaning we would have to restart the machine for Nginx to run. 
+
 # QUESTION B
 
 You make have noted that the `become: true` statement has moved from a specific task to the beginning
 of the playbook, and is on the same indentation level as `tasks:`.
 
 What does this accomplish?
+
+**Answer**
+
+The `become: true` statement is placed at the playbook level, meaning all tasks in the playbook will be executed with elevated (root) privileges. If we instead place `become: true` under a specific task, only that particular task will run as root.
 
 # QUESTION C
 
@@ -72,8 +79,35 @@ log in to the machine and make sure that there are no `nginx` processes running.
 
 Why did we change the order of the tasks in the `04-uninstall-webserver.yml` playbook?
 
+**YAML file**
+```bash
+---
+- name: Uninstall a webserver
+  hosts: web
+  become: true
+  tasks:
+
+    - name: Disable nginx is started at boot
+      ansible.builtin.service:
+        name: nginx
+        state: stopped
+        enabled: false
+
+    - name: Uninstall Nginx
+      ansible.builtin.package:
+        name: nginx
+        state: absent
+```
+**Answer**
+If we keep the same order as before, Ansible will try to stop Nginx after it has already been uninstalled. Because of this, Ansible will not be able to execute all tasks successfully. By changing the order, we ensure that Nginx is first stopped and then uninstalled in the correct sequence.
+
+
 # BONUS QUESTION
 
 Consider the output from the tasks above, and what we were actually doing on the machine.
 
 What is a good naming convention for tasks? (What SHOULD we write in the `name:` field`?)
+
+**Answer**
+The `name:` field should describe the desired state or purpose of the task.
+It’s best to keep it short and readable, as this makes the playbook easier to understand and debug. However, it shouldn’t be too simple, since that can make the task’s goal unclear.
