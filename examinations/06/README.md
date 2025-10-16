@@ -119,6 +119,54 @@ HINTS:
   also set the correct SELinux security context type on the directory and files. The context in question
   in this case should be `httpd_sys_content_t` for the `/var/www/example.internal/html/` directory.
 
+**YAML FILE**
+
+```yaml
+---
+- name: Copies local files from host to webserver
+  hosts: web
+  become: true
+  tasks:
+    - name: Define source and destination paths
+      ansible.builtin.copy:
+        src: files/https.conf
+        dest: /etc/nginx/conf.d
+        mode: '0644'
+        owner: root
+        group: root
+
+    - name: Ensure the nginx configuration is updated for example.internal
+      ansible.builtin.copy:
+        src: files/example.internal.conf
+        dest: /etc/nginx/conf.d/example.internal.conf
+
+    - name: Create directory structure for website
+      ansible.builtin.file:
+        path: /var/www/example.internal/html/
+        state: directory
+        mode: 0755
+
+    - name: Upload html file to website directory
+      ansible.builtin.copy:
+        src: files/index.html
+        dest: /var/www/example.internal/html/index.html
+        mode: 0644
+
+    - name: Ensure Nginx is restarted and re-reads its configurations
+      ansible.builtin.service:
+        name: nginx
+        state: restarted
+
+```
+
+**Answer**
+
+The first task in the playbook ensures that the Nginx configuration for example.internal is up to date by using the `ansible.builtin.copy` module. This module specifies a source (the local configuration file in the Ansible project) and a destination (the configuration directory on the web server).
+
+To create the directory structure on the web server that will contain the HTML file, I use the `ansible.builtin.file` module. In this task I define the path (/var/www/example.internal/html/), set state: directory to ensure it exists as a directory, and assign the appropriate permissions.
+
+Finally, to upload the HTML file into the newly created directory, I again use the `ansible.builtin.copy` module. Here, I specify the source file (files/index.html), the destination path (/var/www/example.internal/html/index.html), and set the file permissions so that the web server can read it. 
+
 # QUESTION B
 
 To each of the tasks that change configuration files in the webserver, add a `register: [variable_name]`.
@@ -167,6 +215,12 @@ There are several ways to accomplish this, and there is no _best_ way to do this
 
 Is this a good way to handle these types of conditionals? What do you think?
 
+**Answer**
+
+Using the when: keyword is a good way to handle specific conditionals associated with individual tasks. It’s very useful in many scenarios where you want fine-grained control over task execution based on certain conditions.
+
+However, in this case, using a handler is a better approach. A handler automatically executes when any notified task reports a change regardless of which task caused the change. This makes the playbook cleaner, more maintainable, and follows Ansible best practices. 
+
 # BONUS QUESTION
 
 Imagine you had a playbook with hundreds of tasks to be done on several hosts, and each one of these tasks
@@ -177,3 +231,17 @@ would you like the flow to work?
 
 Describe in simple terms what your preferred task flow would look like, not necessarily implemented in
 Ansible, but in general terms.
+
+**Answer**
+
+I would use handlers to manage restarts, so services only restart when necessary. However, instead of restarting immediately after each change, I would schedule the restart to happen at a specific time or at the end of the maintenance window.
+
+In general terms, the flow would look like this:
+
+Run all configuration and update tasks across the hosts.
+
+Track which services actually need a restart (for example by using the report statement).
+
+Once all tasks are complete, perform the required restarts in a controlled order or during a scheduled downtime.
+
+This minimizes interruptions, avoids unnecessary restarts, and ensures all updates are applied before the service is restarted once.
