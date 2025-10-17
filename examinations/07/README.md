@@ -23,11 +23,42 @@ Make similar changes to this playbook that we did for the _nginx_ server, so tha
 the `mariadb` service starts automatically at boot, and is started when the playbook
 is run.
 
+**PLAYBOOK**
+
+```yaml
+---
+- name: Install MariaDB-server
+  hosts: db
+  become: true
+  tasks:
+    - name: Ensure MariaDB-server is installed.
+      ansible.builtin.package:
+        name: mariadb-server
+        state: present
+
+    - name: Ensure MariaDB-server is started at boot
+      ansible.builtin.service:
+        name: mariadb
+        state: started
+        enabled: true
+
+```
+
 # QUESTION B
 
 When you have run the playbook above successfully, how can you verify that the `mariadb`
 service is started and is running?
 
+**Answer**
+
+I can connect to the db server and use the command `systemctl status mariadb` but its a lot easier to just run the command `ansible db -m ansible.builtin.shell -a "systemctl status mariadb"` from my host.
+
 # BONUS QUESTION
 
 How many different ways can use come up with to verify that the `mariadb` service is running?
+
+**Answer**
+
+Checks full service status: ansible db -m ansible.builtin.shell -a "systemctl status mariadb"
+Check only the active state: ansible db -m ansible.builtin.shell -a "systemctl is-active mariadb"
+Process check: ansible db -m ansible.builtin.shell -a "ps aux | grep [m]ariadb"

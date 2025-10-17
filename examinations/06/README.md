@@ -119,7 +119,7 @@ HINTS:
   also set the correct SELinux security context type on the directory and files. The context in question
   in this case should be `httpd_sys_content_t` for the `/var/www/example.internal/html/` directory.
 
-**YAML FILE**
+**PLAYBOOK**
 
 ```yaml
 ---

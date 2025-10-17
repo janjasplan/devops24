@@ -113,7 +113,7 @@ incompatibilities.
 What happens if you run `ansible-inventory --list` in the directory you created above?
 
 **Output**
-```bash
+```json
 {
     "_meta": {
         "hostvars": {
@@ -187,7 +187,7 @@ What does the `ansible_connection=local` part mean?
 
 **Output**
 
-```bash
+```json
 jesdeb | SUCCESS => {
     "ansible_facts": {
         "discovered_interpreter_python": "/usr/bin/python3"
