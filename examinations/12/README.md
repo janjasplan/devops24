@@ -41,3 +41,15 @@ HINT: You can use
 
 to create a skeleton for a role. You won't need ALL the directories created by this,
 but it gives you a starting point to fill out in case you don't want to start from scratch.
+
+
+
+**Answer**
+Under the directory roles, I have created two roles using `ansible-galaxy role init`.
+Since some software is shared between both roles, I also created a separate `base` role that contains the common installation tasks.
+
+Because the roles I call in my main playbook are themselves executed as task sets, I needed to remove the top-level `tasks:` key from all included playbooks. Similarly, the `enabled: true` configuration is only required in my main playbook, so I removed it from the individual playbooks within each role.
+
+Each role has its own playbooks placed under the tasks directory, alongside the `main.yml` file. Inside `main.yml`, I use the `include_tasks:` directive to reference all the task files that should be executed for that specific role.
+
+Finally, I also include the variable files that contain encrypted data, so that sensitive information can be accessed securely within the roles. I did this by using the `ansible.builtin.include_vars:` module.
