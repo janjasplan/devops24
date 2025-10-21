@@ -38,6 +38,51 @@ When your playbook is run, one should be able to do this on the webserver:
 
 There are multiple ways to accomplish this, but keep in mind _idempotency_ and _maintainability_.
 
+**Answer**
+
+First, I create a YAML file that contains the users and their associated groups. The `users:` key defines each user with a name and the list of groups they should belong to. After that, I create a playbook and reference the YAML file using the `vars_files:` argument. I then define a task that uses the `loop:` directive to iterate over all users from the variable file. Each user is treated as an individual item, and I use this item variable to specify the username and the groups for each user in the task.
+
+**PLAYBOOK**
+```yaml
+---
+- name: Ensure users and groups are configured
+  hosts: web
+  become: yes
+  vars_files:
+    - vars/11-users.yml
+
+
+  tasks:
+    - name: Ensure users are present and added to groups
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        state: present
+        groups: "{{ item.groups | join(',') }}"
+        append: yes
+      loop: "{{ users }}"
+```
+**YAML FILE WITH USERS AND GROUPS**
+```yaml
+users:
+  - name: alovelace
+    groups:
+      - wheel
+      - video
+      - audio
+
+  - name: aturing
+    groups:
+      - tape
+
+  - name: edijkstra
+    groups:
+      - tcpdump
+
+  - name: ghopper
+    groups:
+      - audio
+```
+
 # QUESTION B
 
 Write a playbook that uses
@@ -50,6 +95,40 @@ For now you can create empty files in the `files/` directory called anything as 
 
     $ touch files/foo.md files/bar.md files/baz.md
 
+
+**Answer**
+First, I create the .md files in my `files` directory. After that, I create a new playbook, shown below. I configure Ansible to become the `deploy` user, and then add a task that uses the `ansible.builtin.copy` module. In this task, the `src:` argument is set to `"{{ item }}"`, which means that Ansible will iterate over all files returned by the `with_fileglob` directive. Each of these files will then be copied to the specified destination in `dest:` on the database server, with the file permissions defined by the `mode:` argument.
+
+
+**PLAYBOOK**
+```yaml
+---
+- name: Copy all md files to deploy users home directory
+  hosts: db
+  become: yes
+  become_user: deploy
+
+  tasks:
+    - name: Copy all markdown files
+      ansible.builtin.copy:
+        src: "{{ item }}"
+        dest: "~/"
+        mode: '0644'
+      with_fileglob:
+        - "files/*.md"
+```
+
+
+**PROMPT THAT PROVES THE FILES HAVE BEEN SUCCESFULLY ADDED TO DBSERVER**
+```bash
+jesper@jesdeb:~/ansible$ ansible db -m ansible.builtin.shell -a "ls -l /home/deploy"
+192.168.121.202 | CHANGED | rc=0 >>
+total 0
+-rw-r--r--. 1 deploy deploy 0 Oct 20 11:17 bar.md
+-rw-r--r--. 1 deploy deploy 0 Oct 20 11:17 baz.md
+-rw-r--r--. 1 deploy deploy 0 Oct 20 11:17 foo.md
+```
+
 # BONUS QUESTION
 
 Add a password to each user added to the playbook that creates the users. Do not write passwords in plain
@@ -57,9 +136,67 @@ text in the playbook, but use the password hash, or encrypt the passwords using 
 
 There are various utilities that can output hashed passwords, check the FAQ for some pointers.
 
+
+**Answer**
+
+First i add the password argument in my "users and groups" file and i make sure to use the password_hash command and specify that it should be hashed with the SHA-512 standard. I then proceed with configuring the playbook by adding the line `password: "{{ item.password }}"` in my task that loops over my yaml file. I also want to make sure that the yaml file is encrypted so i use the command `ansible-vault encrypt 11-users.yaml`. I choose the same password that is stored within my `~/.vault_pass.txt` file. 
+
+**YAML FILE WHICH SHOWS THE PASSWORD ARGUMENT**
+```yaml
+users:
+
+  - name: alovelace
+    groups:
+      - wheel
+      - video
+      - audio
+    password: "{{ 'secretpassword' | password_hash('sha512') }}"
+
+  - name: aturing
+    groups:
+      - tape
+    password: "{{ 'secretpassword' | password_hash('sha512') }}"
+
+  - name: edijkstra
+    groups:
+      - tcpdump
+    password: "{{ 'secretpassword' | password_hash('sha512') }}"
+
+  - name: ghopper
+    groups:
+      - audio
+    password: "{{ 'secretpassword' | password_hash('sha512') }}"
+```
+
+**PLAYBOOK**
+```yaml
+---
+- name: Ensure users and groups are configured
+  hosts: web
+  become: yes
+  vars_files:
+    - vars/11-users.yml
+
+
+  tasks:
+    - name: Ensure users are present and added to groups
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        state: present
+        groups: "{{ item.groups | join(',') }}"
+        password: "{{ item.password }}"
+        append: yes
+      loop: "{{ users }}"
+```
+
+
 # BONUS BONUS QUESTION
 
 Add the real names of the users we added earlier to the GECOS field of each account. Google is your friend.
+
+**Answer**
+
+By configuring the YAML file that contains the user information, I add the argument `real_name:` with the user's full name as its value. In my playbook, I then include the line `comment: "{{ item.real_name }}"` within the task that iterates through the users defined in the YAML file.  
 
 # Resources and Documentation
 

@@ -36,7 +36,7 @@ Use the `ansible.builtin.template` module to accomplish this task.
 
 
 **Answer**
-When i have created the jinja template i need to configure the `listen` arguments. The two arguments are being replaced with `{{ ansible_default_ipv4.address }}:80;` and `{{ ansible_default_ipv4.address }}:443 ssl;`. Now my webserver will only listen to calls from the localhosts ip adress through the specific ports. With this alternation someone else can run this playbook and still be able to connect to the webserver.
+When I created the Jinja template, I needed to configure the listen arguments. These were replaced with `{{ ansible_default_ipv4.address }}:80;` and `{{ ansible_default_ipv4.address }}:443 ssl;`. This ensures that the web server listens only on its own external IP address through the specified ports. With this change, anyone running the same playbook on a different machine will automatically use that machine’s IP address, making the setup flexible and reusable.
 
 
 
@@ -61,4 +61,49 @@ server {
         try_files $uri $uri/ =404;
     }
 }
+```
+
+**PLAYBOOK**
+```yaml
+---
+- name: Copies local files from host to webserver
+  hosts: web
+  become: true
+  tasks:
+    - name: Define source and destination paths
+      ansible.builtin.copy:
+        src: files/https.conf
+        dest: /etc/nginx/conf.d
+        mode: '0644'
+        owner: root
+        group: root
+
+    - name: Ensure the nginx configuration is updated for example.internal
+      ansible.builtin.template:
+        src: templates/example.internal.conf.j2
+        dest: /etc/nginx/conf.d/example.internal.conf
+
+    - name: Create directory structure for website
+      ansible.builtin.file:
+        path: /var/www/example.internal/html/
+        state: directory
+        mode: 0755
+
+    - name: Upload html file to website directory
+      ansible.builtin.copy:
+        src: files/index.html
+        dest: /var/www/example.internal/html/index.html
+        mode: 0644
+      register: result
+
+    - name: Print the value of result
+      ansible.builtin.debug:
+        var: result
+
+    - name: Ensure Nginx is restarted and re-reads its configurations
+      ansible.builtin.service:
+        name: nginx
+        state: restarted
+      when: result.changed
+
 ```
