@@ -1,0 +1,9 @@
+---
+# tasks file for dbserver
+- name: Include vaulted secrets
+  ansible.builtin.include_vars:
+    vars/secrets.yml
+
+- import_tasks: 09-mariadb-password.yml
+- import_tasks: 11-copy-md.yml
+
