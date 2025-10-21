@@ -1,0 +1,13 @@
+---
+# Install a webserver
+- name: Ensure nginx is installed
+  ansible.builtin.package:
+    name: nginx
+    state: latest
+
+- name: Ensure nginx is started at boot
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: true
+

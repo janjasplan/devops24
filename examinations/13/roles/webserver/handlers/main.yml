@@ -1,0 +1,4 @@
+---
+# handlers file for webserver
+
+- import_tasks: reload_nginx.yml

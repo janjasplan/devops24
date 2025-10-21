@@ -1,0 +1,16 @@
+---
+# Ensure users and groups are configured
+
+- name: Ensure users are present and added to groups
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    comment: "{{ item.real_name }}"
+    state: present
+    groups: "{{ item.groups | join(',') }}"
+    password: "{{ item.password }}"
+    append: yes
+  loop: "{{ users }}"
+  notify:
+    - reload nginx
+
+

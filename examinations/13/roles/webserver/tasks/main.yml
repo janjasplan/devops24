@@ -1,0 +1,10 @@
+---
+# tasks file for webserver
+- name: Include vaulted secrets
+  ansible.builtin.include_vars:
+    vars/11-users.yml
+
+- import_tasks: webserver.yml
+- import_tasks: install-cert.yml
+- import_tasks: 10-web-template.yml
+- import_tasks: 11-create-users.yml
