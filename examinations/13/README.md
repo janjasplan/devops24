@@ -21,3 +21,13 @@ Also note the difference between `restarted` and `reloaded` in the [ansible.buil
 
 In order for `nginx` to pick up any configuration changes, it's enough to do a `reload` instead of
 a full `restart`.
+
+**Answer**
+
+First, I create a handler inside the `handlers` directory within my webserver role.
+In this handler, I use the `ansible.builtin.service` module with the arguments `name: nginx` and `state: reloaded`.
+This ensures that the nginx service will be reloaded instead of restarted when I notify the handler.
+I then include my handler in `handlers/main.yml` using the `import_tasks:` directive.
+
+Next, I make sure that the handler is triggered when needed by adding the `notify:` argument to the task that updates the users, and setting the value to the handler’s name (reload nginx).
+Finally, I remove the original task that restarted nginx after every configuration change, since the handler now takes care of reloading the service only when it’s actually required. 

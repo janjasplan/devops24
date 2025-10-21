@@ -125,7 +125,7 @@ Note also that `curl` needs the `--insecure` option to establish a connection to
 a self signed certificate.
 
 
-**YAML file**
+**Playbook**
 ```yaml
 ---
 - name: Copies local files from host to webserver

@@ -144,7 +144,7 @@ How do we now remove the software we installed through the playbook above? Make 
 playbook remove the exact same software we previously installed. Call the created
 playbook `03-uninstall-software.yml`.
 
-**Yaml file**
+**PLAYBOOK**
 ```bash
 ---
  - name: Uninstall previously installed software
