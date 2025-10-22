@@ -1,0 +1,24 @@
+---
+- name: Secure sudo for deploy user
+  hosts: all
+  become: true
+
+  tasks:
+
+    - name: Gather shadow entries
+      ansible.builtin.getent:
+        database: shadow
+
+    - name: Ensure deploy user has password if missing
+      ansible.builtin.user:
+        name: deploy
+        password: "{{ 'hunter12' | password_hash('sha512') }}"
+      when:
+        - ansible_facts.getent_shadow.deploy[0] in ['', '!', '*']
+
+    - name: Remove passwordless sudo
+      ansible.builtin.lineinfile:
+        path: /etc/sudoers.d/deploy
+        regexp: '^%?deploy.*NOPASSWD: ALL'
+        line: "deploy ALL=(ALL) ALL"
+        validate: 'visudo -cf %s'
