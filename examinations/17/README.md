@@ -36,3 +36,10 @@ provided instead.
 To be able to use the password when running the playbooks later, you must use the `--ask-become-pass`
 option to `ansible` and `ansible-playbook` to provide the password. You can also place the password
 in a file, like with `ansible-vault`, or have it encrypted via `ansible-vault`.
+
+**Answer**
+Playbooken inleder med att hämta information från `/etc/shadow` med hjälp av modulen `ansible.builtin.getent`, för att kunna läsa in användarnas lösenordshashar. Därefter kontrolleras om användaren `deploy` saknar lösenord eller är spärrad. Om så är fallet sätts ett nytt lösenord till `hunter12`, som hashats med SHA-512 innan det skrivs till systemet.
+
+När lösenordet är säkerställt går playbooken vidare till att söka upp raden i `/etc/sudoers.d/deploy` som innehåller `NOPASSWD: ALL`. Den raden ersätts med `deploy ALL=(ALL) ALL`, vilket innebär att användaren fortfarande har fulla sudo-rättigheter men nu måste ange sitt lösenord vid användning av sudo. För att undvika syntaxfel och risken att låsa ute systemadministratören valideras ändringen med kommandot `visudo -cf %s` innan filen sparas.
+
+Efter körning kan `deploy` användaren fortfarande använda sudo, men inte längre utan autentisering. 

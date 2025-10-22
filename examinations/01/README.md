@@ -34,7 +34,7 @@ Answer: The authorized_keys file contains one or more public SSH keys that ident
 When logged into one of the VMs, how can you connect to the
 other VM without a password?
 
-Answer: 
+**Answer:** 
 
 First, I log in to my dbserver to change the password if needed. Then, I generate a new SSH key pair on my webserver.
 Once the keys are created, I use the ssh-copy-id command to copy my public key to the dbserver. After that, I can easily connect from my webserver to the dbserver using my private key, without having to enter a password
