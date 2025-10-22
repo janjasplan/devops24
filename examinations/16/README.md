@@ -53,9 +53,16 @@ For instance:
 
 It is up to you to implement the solution you feel works best.
 
+**Answer**
+Im my playbook i need to set `gather_facts:` to true aswell as creating two tasks that will gather facts regarding running services and installed packages. During the following tasks i use the `ansible.builtin.assert` module and with the argument `that:` i specify which services or packages that we are looking at. With the `fail_msg:` and the `success_msg:` argument Ansible will print output depending on what happened in the argument `that:`.
+
+
 # BONUS QUESTION
 
 If you implement these tasks within one or more roles, you will gain enlightenment and additional karma.
+
+**Answer**
+I create a the role "cis_compliance" with `ansible-galaxy init cis_compliance` and then i copied my playbook under the `tasks` directory next to the `main.yml` file. I have to configure the playbook so that the tasks, hosts and playbookname is removed. I then import the task into my main.yml file.
 
 # Resources
 
