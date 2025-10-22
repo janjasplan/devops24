@@ -1,0 +1,95 @@
+---
+- name: Basic Security Compliance Checks (CIS inspired)
+  hosts: all
+  become: true
+  gather_facts: true
+
+  tasks:
+
+
+    - name: Gather installed packages
+      ansible.builtin.package_facts:
+
+    - name: Gather service facts
+      ansible.builtin.service_facts:
+
+
+    - name: Check that telnet is not installed
+      ansible.builtin.assert:
+        that:
+          - "'telnet' not in ansible_facts.packages"
+          - "'telnet-server' not in ansible_facts.packages"
+        fail_msg: "Telnet or telnet-server is installed"
+        success_msg: "Telnet is not installed"
+
+
+    - name: Check that firewalld is installed
+      ansible.builtin.assert:
+        that:
+          - "'firewalld' in ansible_facts.packages"
+        fail_msg: "firewalld package is missing"
+        success_msg: "firewalld package is installed"
+
+
+    - name: Check that firewalld service is active
+      ansible.builtin.assert:
+        that:
+          - "'firewalld.service' in ansible_facts.services"
+          - ansible_facts.services['firewalld.service'].state == 'running'
+        fail_msg: "firewalld service is not running"
+        success_msg: "firewalld service is active"
+
+
+    - name: Check that SSH (OpenSSH server) is installed
+      ansible.builtin.assert:
+        that:
+          - "'openssh-server' in ansible_facts.packages"
+        fail_msg: "OpenSSH server is missing"
+        success_msg: "OpenSSH server is installed"
+
+    - name: Check that SSH service is active
+      ansible.builtin.assert:
+        that:
+          - "'sshd.service' in ansible_facts.services"
+          - ansible_facts.services['sshd.service'].state == 'running'
+        fail_msg: "sshd service is not running"
+        success_msg: "sshd service is running"
+
+
+    - name: Check sysctl for IP forwarding
+      ansible.builtin.command: sysctl net.ipv4.ip_forward
+      register: ip_forward
+      changed_when: false
+
+    - name: Assert that IP forwarding is disabled
+      ansible.builtin.assert:
+        that:
+          - "'net.ipv4.ip_forward = 0' in ip_forward.stdout"
+        fail_msg: "IP forwarding is enabled"
+        success_msg: "IP forwarding is disabled"
+
+
+    - name: Check that cron is installed
+      ansible.builtin.assert:
+        that:
+          - "'cronie' in ansible_facts.packages"
+        fail_msg: "cronie package is missing"
+        success_msg: "cronie (cron) package is installed"
+
+
+    - name: Check that cron service is active
+      ansible.builtin.assert:
+        that:
+          - "'crond.service' in ansible_facts.services"
+          - ansible_facts.services['crond.service'].state == 'running'
+        fail_msg: "crond service is not running"
+        success_msg: "crond service is active"
+
+
+    - name: Check that rsyslog is running
+      ansible.builtin.assert:
+        that:
+          - "'rsyslog.service' in ansible_facts.services"
+          - ansible_facts.services['rsyslog.service'].state == 'running'
+        fail_msg: "rsyslog is not running"
+        success_msg: "rsyslog service is running"
