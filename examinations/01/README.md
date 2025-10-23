@@ -21,20 +21,24 @@ This means it is a directory (d), and the owner (deploy) has read, write, and ex
 
 Why are the permissions set in such a way?
 
-Answer: These permissions ensure that only the deploy user can access and modify the SSH configuration and keys. This prevents other users on the system from viewing or tampering with private keys, which enhances the security of SSH authentication.
+**Answer** 
+
+These permissions ensure that only the deploy user can access and modify the SSH configuration and keys. This prevents other users on the system from viewing or tampering with private keys, which enhances the security of SSH authentication.
 
 ## QUESTION B
 
 What does the file `~/.ssh/authorized_keys` contain?
 
-Answer: The authorized_keys file contains one or more public SSH keys that identify which clients are allowed to log in to the user account. When you try to connect via SSH, the server checks if your public key (stored in this file) matches your private key on the host computer. If they match, access is granted without using a password.
+**Answer** 
+
+The authorized_keys file contains one or more public SSH keys that identify which clients are allowed to log in to the user account. When you try to connect via SSH, the server checks if your public key (stored in this file) matches your private key on the host computer. If they match, access is granted without using a password.
 
 ## QUESTION C
 
 When logged into one of the VMs, how can you connect to the
 other VM without a password?
 
-**Answer:** 
+**Answer** 
 
 First, I log in to my dbserver to change the password if needed. Then, I generate a new SSH key pair on my webserver.
 Once the keys are created, I use the ssh-copy-id command to copy my public key to the dbserver. After that, I can easily connect from my webserver to the dbserver using my private key, without having to enter a password
@@ -56,6 +60,7 @@ ssh deploy@dbserver
 
 Can you run a command on a remote host via SSH? How?
 
+**Answer**
 Yes, you can easily run a command on a remote host using the standard ssh command, followed by the command you want to execute inside quotation marks. This will not open up an interactive session.
 
 ```bash

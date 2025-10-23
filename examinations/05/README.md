@@ -149,7 +149,7 @@ a self signed certificate.
 
 **Answer**
 
-To restart the Nginx service without going into the webserver we add a task in the playbook script.
+To restart the Nginx service without going into the webserver we add a task in the playbook script. With the `ansible.builti.service` module i set `state:` to `restarted`.
 
 
 # QUESTION C

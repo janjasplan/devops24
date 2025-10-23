@@ -144,20 +144,9 @@ How do we now remove the software we installed through the playbook above? Make 
 playbook remove the exact same software we previously installed. Call the created
 playbook `03-uninstall-software.yml`.
 
-**PLAYBOOK**
-```bash
----
- - name: Uninstall previously installed software
-   hosts: all
-   tasks:
-     - name: Remove vim, bash-completion, and qemu-guest-agent
-       become: true
-       ansible.builtin.package:
-         name: vim,bash-completion,qemu-guest-agent
-         state: absent
-```
 
 **Answer**
+
 To uninstall the previously installed features, I run the YAML file shown above. The difference from the first file is that I specify that the tasks will be removed instead of installed. I also make sure that the state variable is changed from present to absent. When I run the playbook again, Ansible will check if the features are already uninstalled. Since their state is absent, it will not perform the tasks again.
 
 ## BONUS QUESTION
