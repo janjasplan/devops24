@@ -11,4 +11,4 @@
     append: true
   loop: "{{ users }}"
   notify:
-    - reload nginx
+    - Reload_nginx
