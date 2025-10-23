@@ -1,2 +1,4 @@
 ---
-- import_tasks: site.yml
+
+- name: Site
+  ansible.builtin.import_tasks: site.yml

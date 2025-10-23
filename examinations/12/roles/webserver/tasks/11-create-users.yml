@@ -8,8 +8,7 @@
     state: present
     groups: "{{ item.groups | join(',') }}"
     password: "{{ item.password }}"
-    append: yes
+    append: true
   loop: "{{ users }}"
-
-
-
+  notify:
+    - reload nginx

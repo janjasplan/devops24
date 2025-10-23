@@ -42,46 +42,6 @@ There are multiple ways to accomplish this, but keep in mind _idempotency_ and _
 
 First, I create a YAML file that contains the users and their associated groups. The `users:` key defines each user with a name and the list of groups they should belong to. After that, I create a playbook and reference the YAML file using the `vars_files:` argument. I then define a task that uses the `loop:` directive to iterate over all users from the variable file. Each user is treated as an individual item, and I use this item variable to specify the username and the groups for each user in the task.
 
-**PLAYBOOK**
-```yaml
----
-- name: Ensure users and groups are configured
-  hosts: web
-  become: yes
-  vars_files:
-    - vars/11-users.yml
-
-
-  tasks:
-    - name: Ensure users are present and added to groups
-      ansible.builtin.user:
-        name: "{{ item.name }}"
-        state: present
-        groups: "{{ item.groups | join(',') }}"
-        append: yes
-      loop: "{{ users }}"
-```
-**YAML FILE WITH USERS AND GROUPS**
-```yaml
-users:
-  - name: alovelace
-    groups:
-      - wheel
-      - video
-      - audio
-
-  - name: aturing
-    groups:
-      - tape
-
-  - name: edijkstra
-    groups:
-      - tcpdump
-
-  - name: ghopper
-    groups:
-      - audio
-```
 
 # QUESTION B
 
@@ -98,25 +58,6 @@ For now you can create empty files in the `files/` directory called anything as 
 
 **Answer**
 First, I create the .md files in my `files` directory. After that, I create a new playbook, shown below. I configure Ansible to become the `deploy` user, and then add a task that uses the `ansible.builtin.copy` module. In this task, the `src:` argument is set to `"{{ item }}"`, which means that Ansible will iterate over all files returned by the `with_fileglob` directive. Each of these files will then be copied to the specified destination in `dest:` on the database server, with the file permissions defined by the `mode:` argument.
-
-
-**PLAYBOOK**
-```yaml
----
-- name: Copy all md files to deploy users home directory
-  hosts: db
-  become: yes
-  become_user: deploy
-
-  tasks:
-    - name: Copy all markdown files
-      ansible.builtin.copy:
-        src: "{{ item }}"
-        dest: "~/"
-        mode: '0644'
-      with_fileglob:
-        - "files/*.md"
-```
 
 
 **PROMPT THAT PROVES THE FILES HAVE BEEN SUCCESFULLY ADDED TO DBSERVER**
@@ -167,28 +108,6 @@ users:
       - audio
     password: "{{ 'secretpassword' | password_hash('sha512') }}"
 ```
-
-**PLAYBOOK**
-```yaml
----
-- name: Ensure users and groups are configured
-  hosts: web
-  become: yes
-  vars_files:
-    - vars/11-users.yml
-
-
-  tasks:
-    - name: Ensure users are present and added to groups
-      ansible.builtin.user:
-        name: "{{ item.name }}"
-        state: present
-        groups: "{{ item.groups | join(',') }}"
-        password: "{{ item.password }}"
-        append: yes
-      loop: "{{ users }}"
-```
-
 
 # BONUS BONUS QUESTION
 

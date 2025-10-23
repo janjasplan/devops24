@@ -1,14 +1,14 @@
 ---
 - name: Install and enable firewall for all servers
-  become: yes
+  become: true
   hosts: all
   tasks:
 
     - name: Install 'firewalld' and 'python3-firewall'
       ansible.builtin.package:
         name:
-        - firewalld
-        - python3-firewall
+          - firewalld
+          - python3-firewall
         state: present
 
 
@@ -20,7 +20,7 @@
 
 - name: Configure firewalld on web servers
   hosts: web
-  become: yes
+  become: true
   tasks:
 
     - name: Enable HTTP and HTTPS services
@@ -28,7 +28,7 @@
         service: "{{ item }}"
         permanent: true
         state: enabled
-        immediate: yes
+        immediate: true
       loop:
         - http
         - https
@@ -36,7 +36,7 @@
 
 - name: Configure firewalld on database servers
   hosts: db
-  become: yes
+  become: true
   tasks:
 
     - name: Enable MySQL service
@@ -44,4 +44,4 @@
         service: mysql
         permanent: true
         state: enabled
-        immediate: yes
+        immediate: true

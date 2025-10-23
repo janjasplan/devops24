@@ -36,43 +36,6 @@ https://docs.ansible.com/ansible/latest/collections/community/mysql/index.html
 **Answer**
 First, I add a task that ensures that the Python package is installed. I then proceed with creating my database and a database user. With the `password` argument, I give the user a password. The `priv` argument is used to set the privileges that the user has in my database. `webappdb.*:ALL` makes sure that the user has all privileges to all tables inside the webappdb database. Since I don’t want to use a password to log in as root, I instead use the `login_unix_socket:` argument. I point to the file `/var/lib/mysql/mysql.sock`, where the MySQL server’s socket is located, allowing Ansible to connect as the root user without using a password.
 
-**PLAYBOOK**
-```yaml
----
-- name: Install MariaDB-server
-  hosts: db
-  become: true
-  tasks:
-    - name: Ensure MariaDB-server is installed.
-      ansible.builtin.package:
-        name: mariadb-server
-        state: present
-
-    - name: Ensure MariaDB-server is started at boot
-      ansible.builtin.service:
-        name: mariadb
-        state: started
-        enabled: true
-
-    - name: Ensure the python package is installed
-      ansible.builtin.package:
-        name: python3-PyMySQL
-        state: present
-
-    - name: Create database 'webappdb'
-      community.mysql.mysql_db:
-        name: webappdb
-        state: present
-        login_unix_socket: /var/lib/mysql/mysql.sock
-
-    - name: Create database user 'webappuser'
-      community.mysql.mysql_user:
-        name: webappuser
-        password: secretpassword
-        priv: 'webappdb.*:ALL'
-        state: present
-        login_unix_socket: /var/lib/mysql/mysql.sock
-```
 
 **Command and output that shows the created user**
 ```bash

@@ -4,6 +4,8 @@
   ansible.builtin.include_vars:
     vars/secrets.yml
 
-- import_tasks: 09-mariadb-password.yml
-- import_tasks: 11-copy-md.yml
+- name: 09-mariadb-password
+  ansible.builtin.import_tasks: 09-mariadb-password.yml
 
+- name: 11-copy-md
+  ansible.builtin.import_tasks: 11-copy-md.yml

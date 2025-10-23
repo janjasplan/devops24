@@ -26,49 +26,6 @@ In my playbook, I then add the argument `vars_files:` at the playbook level and 
 The `password:` argument under the task "Create database user 'webappuser'" is then modified to use the value `{{ db_password }}`.
 The double curly brackets indicate that the value of the variable is inserted here. 
 
-**PLAYBOOK**
-```yaml
----
-- name: Install MariaDB-server
-  hosts: db
-  become: true
-  vars_files:
-    - secrets.yml
-
-  tasks:
-    - name: Ensure MariaDB-server is installed.
-      ansible.builtin.package:
-        name: mariadb-server
-        state: present
-
-    - name: Ensure MariaDB-server is started at boot
-      ansible.builtin.service:
-        name: mariadb
-        state: started
-        enabled: true
-
-    - name: Ensure the python package is installed
-      ansible.builtin.package:
-        name: python3-PyMySQL
-        state: present
-
-    - name: Create database 'webappdb'
-      community.mysql.mysql_db:
-        name: webappdb
-        state: present
-        login_unix_socket: /var/lib/mysql/mysql.sock
-
-    - name: Create database user 'webappuser'
-      community.mysql.mysql_user:
-        name: webappuser
-        password: "{{ db_password }}"
-        priv: 'webappdb.*:ALL'
-        state: present
-        login_unix_socket: /var/lib/mysql/mysql.sock
-
-```
-
-
 # QUESTION B
 
 When the [QUESTION A](#question-a) is solved, use `ansible-vault` to store the password in encrypted

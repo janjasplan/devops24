@@ -217,7 +217,7 @@ Is this a good way to handle these types of conditionals? What do you think?
 
 **Answer**
 
-Using the when: keyword is a good way to handle specific conditionals associated with individual tasks. It’s very useful in many scenarios where you want fine-grained control over task execution based on certain conditions.
+Using the `when:` keyword is a good way to handle specific conditionals associated with individual tasks. It’s very useful in many scenarios where you want fine-grained control over task execution based on certain conditions.
 
 However, in this case, using a handler is a better approach. A handler automatically executes when any notified task reports a change regardless of which task caused the change. This makes the playbook cleaner, more maintainable, and follows Ansible best practices. 
 

@@ -23,26 +23,9 @@ Make similar changes to this playbook that we did for the _nginx_ server, so tha
 the `mariadb` service starts automatically at boot, and is started when the playbook
 is run.
 
-**PLAYBOOK**
+**Answer**
 
-```yaml
----
-- name: Install MariaDB-server
-  hosts: db
-  become: true
-  tasks:
-    - name: Ensure MariaDB-server is installed.
-      ansible.builtin.package:
-        name: mariadb-server
-        state: present
-
-    - name: Ensure MariaDB-server is started at boot
-      ansible.builtin.service:
-        name: mariadb
-        state: started
-        enabled: true
-
-```
+See playbook
 
 # QUESTION B
 

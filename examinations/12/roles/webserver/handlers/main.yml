@@ -1,2 +1,5 @@
 ---
 # handlers file for webserver
+
+- name: Reload_nginx
+  ansible.builtin.import_tasks: reload_nginx.yml

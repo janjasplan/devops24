@@ -1,5 +1,6 @@
 ---
 
+
 - name: Gather installed packages
   ansible.builtin.package_facts:
 
