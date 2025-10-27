@@ -1,0 +1,17 @@
+---
+
+- name: Test custom module
+  hosts: localhost
+
+  vars:
+    message: "random"
+
+  tasks:
+    - name: Run anagrammer module
+      anagrammer:
+        message: "{{ message }}"
+      register: result
+
+    - name: Show result
+      ansible.builtin.debug:
+        var: result

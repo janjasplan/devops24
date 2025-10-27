@@ -58,6 +58,24 @@ If you pass in 'fail me', it should fail like this:
         "reversed_message": "em liaf"
     }
 
+**Answer**
+
+I create a python file named `anagrammer.py` and place it in the `library` folder. 
+
+With the `AnsibleModule` class i create a dictionary `argument_spec` which will contain arguments in form of a dict. The argument needs to be a string value and with the `required` value this parameter is a must when calling the module. 
+
+With `module.params` the value from inside my `message` dict is stored in the variable `message`. I create another variable `reversed_message` which is the previous variable in reverse. 
+
+If the `message` variable is not equal to the `reversed_message` then the `changed` variable is set to true. Otherwise it is false. 
+
+I proceed with an `if` statement in case of the message "fail me" is being submitted. With the `module.fail_json` module the output will be marked in red.
+
+The `result` dict is containing the variables changed, original_message and reversed_message. 
+
+I then use the `module.exit_json` module and unpack the content inside the `result` dict. 
+
+
+
 # QUESTION B
 
 Study the output of `ansible-config dump | grep -i module_path`. You will notice that there is a directory
@@ -67,6 +85,9 @@ Create that directory, and copy the Ansible module you just wrote there, then ma
 that uses this module with the correct parameters.
 
 You don't need to worry about FQCN and namespaces in this examination.
+
+**Answer**
+
 
 # QUESTION C
 
@@ -83,3 +104,16 @@ you most often use in Ansible?
 
 What modules/filters are there in Ansible that can safely test for "truthy/falsy" values, and return something
 more stringent?
+
+**Answer**
+
+Ansible extends Python rules to include YAML strings. 
+In Ansible the following strings is also considered "truthy" and "falsy".
+
+"No"
+"Yes"
+"0"
+"1"
+""
+"on"
+"of"
