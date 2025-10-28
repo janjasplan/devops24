@@ -13,8 +13,8 @@
           static_configs:
             - targets:
                 - 'node-exporter:9100'
-                - '192.168.121.219:9100'
-                - '192.168.121.202:9100'
+                - "{{ hostvars['webserver']['ansible_host'] }}:9100"
+                - "{{ hostvars['dbserver']['ansible_host'] }}:9100"
           relabel_configs:
             - source_labels: [__address__]
               regex: 'node-exporter:9100'

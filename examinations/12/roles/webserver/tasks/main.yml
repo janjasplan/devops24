@@ -4,11 +4,11 @@
   ansible.builtin.include_vars:
     vars/11-users.yml
 
-- name: Install webserver
-  ansible.builtin.import_tasks: webserver.yml
-
 - name: Install cert
   ansible.builtin.import_tasks: install-cert.yml
+
+- name: Install webserver
+  ansible.builtin.import_tasks: webserver.yml
 
 - name: 10-web-template
   ansible.builtin.import_tasks: 10-web-template.yml
